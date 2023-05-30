@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Clube API</title>
+<link rel="stylesheet" href="reset.css">
+<link rel="stylesheet" href="main.css">
+</head>
+<body>
+  <div id="main">
+    <header>
+  <h1 class="font">Clube de Associados do Nottingham Forest</h1>
+    </header>
+
+    <div>
+      <p id="history">&nbsp;&nbsp;&nbsp;&nbsp;O Nottingham Forest Football Club é um clube inglês da região de Nottingham, Midlands Orientais. Venceu a Premier League 1 vez e a Liga dos Campeões por 2 ocasiões.[1] O clube é frequentemente referido simplesmente como Forest, nome presente no símbolo do clube. Eles também são apelidados de “Reds”, devido à cor da sua camisa. Os maiores rivais da equipa são o Derby County e o Leicester City, embora o seu vizinho mais próximo seja o Notts County.
+
+        Fundado em 1865, o Forest se tornou membro fundador da Aliança de Futebol em 1888[2] e seu primeiro grande sucesso veio quando venceu a Copa da Inglaterra em 1898. O clube passou boa parte da primeira metade do século XX jogando a segunda divisão inglesa e o seu próximo título veio em 1959, quando ganhou novamente a Copa da Inglaterra.[3]</p>
+    </div>
+
+<div id="associados">
+  <h2 id="title" class="font">Associados</h2>
+  <ul id="associados-list">
+    <!-- Loop para exibir os associados -->
+    <script src="index.js"></script>
+
+  </ul>
+</div>
+  <h2 id="add" class="font">Adicionar Associado</h2>
+  <form id="associado-form" class="font"  >
+    <input type="text" id="cpf" class="btn" placeholder="CPF" required>
+    <input type="text" id="nome" class="btn" placeholder="Nome" required>
+    <input type="email" id="email" class="btn" placeholder="Email" required>
+    <button type="submit">Adicionar</button>
+  </form>
+
+  <h2 id="title" class="font">Buscar Associado por Email</h2>
+  <form id="buscar-form">
+    <input type="email" id="email-busca" class="btn" placeholder="Email" required>
+    <button type="submit">Buscar</button>
+  </form>
+
+  <script>
+    function addAssociado(event) {
+      event.preventDefault();
+
+      const form = document.getElementById('associado-form');
+      const cpf = form.querySelector('#cpf').value;
+      const nome = form.querySelector('#nome').value;
+      const email = form.querySelector('#email').value;
+
+      const data = { cpf, nome, email };
+
+      fetch('http://localhost:3000/associados', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      })
+        .then(response => response.json())
+        .then(data => {
+          console.log('Associado adicionado:', data);
+          form.reset();
+          getAssociados();
+        })
+        .catch(error => {
+          console.error('Erro ao adicionar associado:', error);
+        });
+    }
+
+    // Função para fazer uma requisição GET para buscar um associado por email
+    function buscarAssociado(event) {
+      event.preventDefault();
+
+      const form = document.getElementById('buscar-form');
+      const email = form.querySelector('#email-busca').value;
+
+      fetch(`http://localhost:3000/associados/buscar/${email}`)
+        .then(response => response.json())
+        .then(data => {
+          const associadosList = document.getElementById('associados-list');
+          associadosList.innerHTML = '';
+
+          const listItem = document.createElement('li');
+          listItem.textContent = `${data.nome} - ${data.email}`;
+          associadosList.appendChild(listItem);
+        })
+        .catch(error => {
+          console.error('Erro ao buscar associado:', error);
+          associadosList.innerHTML = 'Nenhum associado encontrado.';
+        });
+    }
+    const associadoForm = document.getElementById('associado-form');
+    associadoForm.addEventListener('submit', addAssociado);
+
+    const buscarForm = document.getElementById('buscar-form');
+    buscarForm.addEventListener('submit', buscarAssociado);
+  </script>
+
+  <footer class="footer"><p>&copy;Todos os direitos reservados Nottingham Forest</p></footer>
+</div>
+</body>
+</html>
